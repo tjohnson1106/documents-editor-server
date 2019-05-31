@@ -1,6 +1,7 @@
 const app = require("express")();
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
+const cors = require("cors");
 
 let value = {
   document: {
@@ -33,6 +34,16 @@ io.on("connection", function(socket) {
     io.emit("new-remote-operations", data);
     console.log(value);
   });
+});
+
+app.use(
+  cors({
+    origin: "http://localhost:3000"
+  })
+);
+
+app.get("/groups/:id", (_req, res) => {
+  res.send(value);
 });
 
 http.listen(4000, function() {
