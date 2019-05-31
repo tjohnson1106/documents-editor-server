@@ -24,6 +24,29 @@ let value = {
   }
 };
 
+const initialEditorValue = {
+  document: {
+    nodes: [
+      {
+        object: "block",
+        type: "paragraph",
+        nodes: [
+          {
+            object: "text",
+            leaves: [
+              {
+                text: "A line of text in a paragraph."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+};
+
+const groupData = {};
+
 io.on("connection", function(socket) {
   socket.on("send-value", () => {
     io.emit("init-value", value);
@@ -42,8 +65,13 @@ app.use(
   })
 );
 
-app.get("/groups/:id", (_req, res) => {
-  res.send(value);
+app.get("/groups/:id", (req, res) => {
+  const { id } = req.params;
+  // send data in group back
+  if (!(id in groupData)) {
+    groupData[id] = initialEditorValue;
+  }
+  res.send(initialEditorValue);
 });
 
 http.listen(4000, function() {
