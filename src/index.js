@@ -3,27 +3,6 @@ const http = require("http").Server(app);
 const io = require("socket.io")(http);
 const cors = require("cors");
 
-let value = {
-  document: {
-    nodes: [
-      {
-        object: "block",
-        type: "paragraph",
-        nodes: [
-          {
-            object: "text",
-            leaves: [
-              {
-                text: "A line of text in a paragraph."
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
-};
-
 const initialEditorValue = {
   document: {
     nodes: [
@@ -48,14 +27,9 @@ const initialEditorValue = {
 const groupData = {};
 
 io.on("connection", function(socket) {
-  socket.on("send-value", () => {
-    io.emit("init-value", value);
-  });
-
   socket.on("new-operations", function(data) {
-    value = data.value;
-    io.emit("new-remote-operations", data);
-    console.log(value);
+    groupData[data.groupId] = data.value;
+    io.emit(`new-remote-operations-${data.groupId}`, data);
   });
 });
 
